@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayAchu Hub</title>
+<title>StudyFlow</title>
 
 <style>
 body {
@@ -11,158 +11,130 @@ body {
   font-family: Arial;
   background: #0f172a;
   color: white;
+  text-align: center;
 }
 
 header {
   background: #020617;
   padding: 15px;
-  text-align: center;
   font-size: 24px;
   font-weight: bold;
 }
 
 .hero {
-  text-align: center;
-  padding: 40px;
+  padding: 30px;
   background: linear-gradient(135deg,#2563eb,#9333ea);
+}
+
+.container {
+  padding: 20px;
 }
 
 button {
   padding: 12px 20px;
+  margin: 5px;
   border: none;
   background: #22c55e;
   color: white;
-  font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
 }
 
-.section {
-  padding: 20px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-  gap: 15px;
-}
-
-.card {
-  background: #1e293b;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-iframe {
-  width: 100%;
-  height: 160px;
-  border-radius: 8px;
-}
-
-.search {
-  text-align: center;
+.timer {
+  font-size: 48px;
   margin: 20px;
 }
 
-input {
+textarea {
+  width: 80%;
+  height: 150px;
+  border-radius: 10px;
   padding: 10px;
-  width: 60%;
-  border-radius: 8px;
   border: none;
 }
 
-footer {
-  text-align: center;
-  padding: 15px;
-  background: #020617;
+.stats {
+  margin-top: 20px;
 }
+
 </style>
 </head>
 
 <body>
 
-<header>🎮 PlayFlix Hub</header>
+<header>📚 StudyFlow</header>
 
 <div class="hero">
-  <h1>Play Games & Watch Movies</h1>
-  <p>Instant entertainment. No downloads.</p>
-  <button onclick="scrollToGames()">Start Playing</button>
+  <h1>Stay Focused. Study Smarter.</h1>
+  <p>Boost your productivity with proven tools.</p>
 </div>
 
-<div class="search">
-  <input type="text" id="search" placeholder="Search games..." onkeyup="filterGames()">
-</div>
+<div class="container">
 
-<div class="section" id="games">
-<h2>🎮 Games</h2>
+<h2>⏱️ Pomodoro Timer</h2>
+<div class="timer" id="timer">25:00</div>
 
-<div class="grid" id="gameList">
+<button onclick="startTimer()">Start</button>
+<button onclick="resetTimer()">Reset</button>
 
-<div class="card" data-name="tetris">
-<h3>Tetris</h3>
-<iframe src="https://tetris.com/play-tetris"></iframe>
-</div>
+<h2>📝 Notes</h2>
+<textarea id="notes" placeholder="Write your notes here..."></textarea>
 
-<div class="card" data-name="pacman">
-<h3>Pacman</h3>
-<iframe src="https://www.retrogames.cc/embed/13632-pac-man.html"></iframe>
-</div>
-
-<div class="card" data-name="snake">
-<h3>Snake</h3>
-<iframe src="https://playsnake.org/"></iframe>
-</div>
-
-<div class="card" data-name="chess">
-<h3>Chess</h3>
-<iframe src="https://www.chess.com/play/computer"></iframe>
-</div>
-
-<div class="card" data-name="2048">
-<h3>2048</h3>
-<iframe src="https://play2048.co/"></iframe>
+<div class="stats">
+<h3>🔥 Sessions Completed: <span id="sessions">0</span></h3>
 </div>
 
 </div>
-</div>
-
-<div class="section">
-<h2>🎬 Free Movies</h2>
-
-<div class="grid">
-
-<div class="card">
-<h3>Classic Movie</h3>
-<iframe src="https://archive.org/embed/night_of_the_living_dead"></iframe>
-</div>
-
-<div class="card">
-<h3>Another Movie</h3>
-<iframe src="https://archive.org/embed/HisGirlFriday"></iframe>
-</div>
-
-</div>
-</div>
-
-<footer>
-© 2026 PlayFlix Hub
-</footer>
 
 <script>
-function scrollToGames() {
-  document.getElementById("games").scrollIntoView({behavior:"smooth"});
+let time = 1500;
+let timerRunning = false;
+let interval;
+let sessions = localStorage.getItem("sessions") || 0;
+
+document.getElementById("sessions").innerText = sessions;
+
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+
+  interval = setInterval(() => {
+    time--;
+    updateDisplay();
+
+    if (time <= 0) {
+      clearInterval(interval);
+      timerRunning = false;
+      sessions++;
+      localStorage.setItem("sessions", sessions);
+      document.getElementById("sessions").innerText = sessions;
+      alert("Session complete! Take a break.");
+      time = 1500;
+    }
+  }, 1000);
 }
 
-function filterGames() {
-  let input = document.getElementById("search").value.toLowerCase();
-  let games = document.querySelectorAll(".card");
-
-  games.forEach(game => {
-    let name = game.getAttribute("data-name");
-    game.style.display = name.includes(input) ? "block" : "none";
-  });
+function resetTimer() {
+  clearInterval(interval);
+  time = 1500;
+  timerRunning = false;
+  updateDisplay();
 }
+
+function updateDisplay() {
+  let minutes = Math.floor(time / 60);
+  let seconds = time % 60;
+  document.getElementById("timer").innerText =
+    minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
+
+// Auto-save notes
+let notes = document.getElementById("notes");
+notes.value = localStorage.getItem("notes") || "";
+
+notes.addEventListener("input", () => {
+  localStorage.setItem("notes", notes.value);
+});
 </script>
 
 </body>
